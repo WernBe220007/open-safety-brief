@@ -8,4 +8,13 @@ export const auth = betterAuth({
         provider: "pg",
         schema: schema,
     }),
+    socialProviders: {
+        microsoft: {
+            clientId: process.env.MICROSOFT_CLIENT_ID as string,
+            clientSecret: process.env.MICROSOFT_CLIENT_SECRET as string,
+            tenantId: "common",
+            authority: "https://login.microsoftonline.com",
+            prompt: "select_account",
+        },
+    }
 });

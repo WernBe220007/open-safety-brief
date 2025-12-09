@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
     id: text("id").primaryKey(),
@@ -58,4 +58,62 @@ export const verification = pgTable("verification", {
         .defaultNow()
         .$onUpdate(() => /* @__PURE__ */ new Date())
         .notNull(),
+});
+
+export const topic = pgTable("topic", {
+    id: uuid().primaryKey().defaultRandom(),
+    name: text().notNull(),
+});
+
+export const incidentReason = pgTable("incident_reason", {
+    id: uuid().primaryKey().defaultRandom(),
+    reason: text().notNull(),
+});
+
+export const incident = pgTable("incident", {
+    id: uuid().primaryKey().defaultRandom(),
+    date: timestamp().defaultNow().notNull(),
+    department: text().notNull(),
+    reason: uuid()
+        .notNull()
+        .references(() => incidentReason.id),
+    instructor: text().notNull(),
+});
+
+export const incidentTopics = pgTable("incident_topics", {
+    incidentId: uuid()
+        .notNull()
+        .references(() => incident.id, { onDelete: "cascade" }),
+    topicId: uuid()
+        .notNull()
+        .references(() => topic.id, { onDelete: "cascade" }),
+});
+
+export const topicSelection = pgTable("topic_selection", {
+    id: uuid().primaryKey().defaultRandom(),
+    name: text().notNull(),
+});
+
+export const topicSelectionTopics = pgTable("topic_selection_topics", {
+    topicSelectionId: uuid()
+        .notNull()
+        .references(() => topicSelection.id, { onDelete: "cascade" }),
+    topicId: uuid()
+        .notNull()
+        .references(() => topic.id, { onDelete: "cascade" }),
+});
+
+export const signature = pgTable("signature", {
+    id: uuid().primaryKey().defaultRandom(),
+    incidentId: uuid()
+        .notNull()
+        .references(() => incident.id, { onDelete: "cascade" }),
+    name: text().notNull(),
+    signedAt: timestamp().defaultNow().notNull(),
+    signature: text().notNull(),
+});
+
+export const additionalPerson = pgTable("additional_person", {
+    id: uuid().primaryKey().defaultRandom(),
+    name: text().notNull()
 });

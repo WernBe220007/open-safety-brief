@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,17 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <p className="text-center text-xs text-muted-foreground fixed bottom-4 left-0 right-0">
+            OpenSafetyBrief AGPLV3 Licensed -{" "}
+            <a
+              href="https://example.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Learn More
+            </a>
+          </p>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
