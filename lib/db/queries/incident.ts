@@ -1,5 +1,5 @@
 "use server";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, asc, eq, isNull } from "drizzle-orm";
 import { headers } from "next/headers";
 import { db } from "@/lib";
 import { auth } from "@/lib/auth";
@@ -20,6 +20,6 @@ export async function getIncidents() {
         department: incident.department,
         reason: incidentReason.reason,
         instructor: incident.instructor,
-    }).from(incident).leftJoin(incidentReason, eq(incident.reason, incidentReason.id));
+    }).from(incident).leftJoin(incidentReason, eq(incident.reason, incidentReason.id)).orderBy(desc(incident.date));
     return data;
 }
