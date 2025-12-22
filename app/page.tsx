@@ -6,6 +6,7 @@ import NavBar from "@/components/nav-bar";
 import { auth } from "@/lib/auth";
 import { Suspense } from "react";
 import Archive from "@/components/archive";
+import { Spinner } from "@/components/ui/spinner";
 
 export default async function Home() {
     const session = await auth.api.getSession({
@@ -20,7 +21,7 @@ export default async function Home() {
         <>
             <NavBar />
             <main>
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<Spinner />}>
                     <Archive />
                 </Suspense>
                 <Link href="/new">

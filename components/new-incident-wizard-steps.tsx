@@ -5,8 +5,15 @@ import NewIncidentWizardStepNewIncident from "./new-incident-wizard-steps/new-in
 import NewIncidentWizardStepParticipants from "./new-incident-wizard-steps/new-incident-wizard-participants";
 import NewIncidentWizardStepSignatures from "./new-incident-wizard-steps/new-incident-wizard-signatures";
 import NewIncidentWizardStepSummary from "./new-incident-wizard-steps/new-incident-wizard-summary";
+import type { Topic } from "@/lib/db/queries/topics";
 
-export default function NewIncidentWizardSteps({ currentStep, setCurrentStep }: { currentStep: number; setCurrentStep: (step: number) => void }) {
+interface NewIncidentWizardStepsProps {
+    currentStep: number;
+    setCurrentStep: (step: number) => void;
+    initialTopics: Promise<Topic[]>;
+}
+
+export default function NewIncidentWizardSteps({ currentStep, setCurrentStep, initialTopics }: NewIncidentWizardStepsProps) {
     function nextStep() {
         if (currentStep < 4) {
             setCurrentStep(currentStep + 1);
@@ -22,7 +29,7 @@ export default function NewIncidentWizardSteps({ currentStep, setCurrentStep }: 
 
     switch (currentStep) {
         case 0:
-            return <NewIncidentWizardStepNewIncident previousStep={previousStep} nextStep={nextStep} />;
+            return <NewIncidentWizardStepNewIncident previousStep={previousStep} nextStep={nextStep} initialTopics={initialTopics} />;
         case 1:
             return <NewIncidentWizardStepParticipants previousStep={previousStep} nextStep={nextStep} />;
         case 2:
