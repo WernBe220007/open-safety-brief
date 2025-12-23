@@ -13,6 +13,8 @@ import { TopicSelector } from "@/components/topic-selector"
 import type { Topic } from "@/lib/db/queries/topics"
 import { Suspense } from "react"
 import { Spinner } from "../ui/spinner"
+import PresetSelection from "../preset-selection"
+import { TopicSelection } from "@/lib/db/queries/topic_selection"
 
 const formSchema = z.object({
     dateTime: z.string().min(1, "Datum ist erforderlich").transform((val) => new Date(val)).pipe(z.date()),
@@ -25,9 +27,10 @@ interface NewIncidentWizardStepNewIncidentProps {
     previousStep: () => void;
     nextStep: () => void;
     initialTopics: Promise<Topic[]>;
+    presetTopicSelections: Promise<TopicSelection[]>;
 }
 
-export default function NewIncidentWizardStepNewIncident({ previousStep, nextStep, initialTopics }: NewIncidentWizardStepNewIncidentProps) {
+export default function NewIncidentWizardStepNewIncident({ previousStep, nextStep, initialTopics, presetTopicSelections }: NewIncidentWizardStepNewIncidentProps) {
     const form = useForm({
         defaultValues: {
             dateTime: new Date().toISOString().slice(0, 16),
@@ -126,13 +129,19 @@ export default function NewIncidentWizardStepNewIncident({ previousStep, nextSte
                     {(field) => (
                         <Field>
                             <FieldLabel>Themen</FieldLabel>
-                            <Suspense fallback={<Spinner />}>
-                                <TopicSelector
-                                    initialTopics={initialTopics}
-                                    selectedTopicIds={field.state.value}
-                                    onSelectionChange={(topicIds) => field.handleChange(topicIds)}
-                                />
-                            </Suspense>
+                            <div className="flex flex-row gap-2">
+                                <Suspense fallback={<Spinner />}>
+                                    <TopicSelector
+                                        initialTopics={initialTopics}
+                                        selectedTopicIds={field.state.value}
+                                        onSelectionChange={(topicIds) => field.handleChange(topicIds)}
+                                    />
+                                </Suspense>
+                                <Suspense fallback={<Spinner />}>
+                                    <PresetSelection presetTopicSelections={presetTopicSelections} />
+                                </Suspense>
+                            </div>
+                            <FieldError errors={field.state.meta.errors} />
                         </Field>
                     )}
                 </form.Field>

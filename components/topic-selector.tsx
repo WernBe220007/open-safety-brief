@@ -1,6 +1,6 @@
 "use client"
 
-import { X, Plus, Check, ChevronsUpDown } from "lucide-react"
+import { X, Plus, ChevronsUpDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import {
     Command,
@@ -20,6 +20,7 @@ import { createTopic, type Topic } from "@/lib/db/queries/topics"
 import { cn } from "@/lib/utils"
 import { use, useMemo, useRef, useState } from "react"
 import { Spinner } from "./ui/spinner"
+import { Checkbox } from "./ui/checkbox"
 
 interface TopicSelectorProps {
     initialTopics: Promise<Topic[]>
@@ -167,15 +168,8 @@ export function TopicSelector({
                                         value={topic.id}
                                         onSelect={() => handleSelect(topic.id)}
                                     >
-                                        <div
-                                            className={cn(
-                                                "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
-                                                isSelected
-                                                    ? "bg-primary text-primary-foreground"
-                                                    : "opacity-50 [&_svg]:invisible"
-                                            )}
-                                        >
-                                            <Check className="size-4" />
+                                        <div className="mr-2 flex size-4 items-center justify-center">
+                                            <Checkbox checked={isSelected} className="size-4" />
                                         </div>
                                         {topic.name}
                                     </CommandItem>
