@@ -138,7 +138,11 @@ export default function NewIncidentWizardStepNewIncident({ previousStep, nextSte
                                     />
                                 </Suspense>
                                 <Suspense fallback={<Spinner />}>
-                                    <PresetSelection presetTopicSelections={presetTopicSelections} />
+                                    <PresetSelection
+                                        presetTopicSelections={presetTopicSelections}
+                                        selectedTopicIds={field.state.value}
+                                        onSelectionChange={(topicIds) => field.handleChange(topicIds)}
+                                    />
                                 </Suspense>
                             </div>
                             <FieldError errors={field.state.meta.errors} />
