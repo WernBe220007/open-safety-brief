@@ -1,9 +1,9 @@
 "use server";
-import { and, desc, asc, eq, isNull } from "drizzle-orm";
+import { asc } from "drizzle-orm";
 import { headers } from "next/headers";
 import { db } from "@/lib";
 import { auth } from "@/lib/auth";
-import { incident, topic } from "../schema";
+import { topic } from "../schema";
 
 export async function getTopics() {
     const session = await auth.api.getSession({

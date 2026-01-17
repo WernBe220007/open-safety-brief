@@ -1,5 +1,5 @@
 "use server";
-import { asc, eq } from "drizzle-orm";
+import { asc } from "drizzle-orm";
 import { headers } from "next/headers";
 import { db } from "@/lib";
 import { auth } from "@/lib/auth";

@@ -31,7 +31,6 @@ const formSchema = z.object({
 })
 
 interface NewIncidentWizardStepNewIncidentProps {
-    previousStep: () => void;
     nextStep: () => void;
     initialTopics: Promise<Topic[]>;
     presetTopicSelections: Promise<TopicSelection[]>;
@@ -39,7 +38,7 @@ interface NewIncidentWizardStepNewIncidentProps {
     initialDepartments: Promise<Department[]>;
 }
 
-export default function NewIncidentWizardStepNewIncident({ previousStep, nextStep, initialTopics, presetTopicSelections, initialReasons, initialDepartments }: NewIncidentWizardStepNewIncidentProps) {
+export default function NewIncidentWizardStepNewIncident({ nextStep, initialTopics, presetTopicSelections, initialReasons, initialDepartments }: NewIncidentWizardStepNewIncidentProps) {
     const { data, updateData } = useWizard();
     const topics = use(initialTopics);
 

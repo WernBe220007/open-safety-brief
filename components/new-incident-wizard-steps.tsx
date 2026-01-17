@@ -37,7 +37,7 @@ export default function NewIncidentWizardSteps({ currentStep, setCurrentStep, in
 
     switch (currentStep) {
         case 0:
-            return <NewIncidentWizardStepNewIncident previousStep={previousStep} nextStep={nextStep} initialTopics={initialTopics} presetTopicSelections={presetTopicSelections} initialReasons={initialReasons} initialDepartments={initialDepartments} />;
+            return <NewIncidentWizardStepNewIncident nextStep={nextStep} initialTopics={initialTopics} presetTopicSelections={presetTopicSelections} initialReasons={initialReasons} initialDepartments={initialDepartments} />;
         case 1:
             return <NewIncidentWizardStepParticipants previousStep={previousStep} nextStep={nextStep} persons={persons} />;
         case 2:
