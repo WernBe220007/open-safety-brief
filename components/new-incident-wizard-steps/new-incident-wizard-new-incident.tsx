@@ -11,8 +11,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { TopicSelector } from "@/components/topic-selector"
 import { ReasonSelector } from "@/components/reason-selector"
+import { DepartmentSelector } from "@/components/department-selector"
 import type { Topic } from "@/lib/db/queries/topics"
 import type { IncidentReason } from "@/lib/db/queries/incident_reason"
+import type { Department } from "@/lib/db/queries/department"
 import { Suspense, use } from "react"
 import { Spinner } from "../ui/spinner"
 import PresetSelection from "../preset-selection"
@@ -21,6 +23,7 @@ import { useWizard } from "../new-incident-wizard-context"
 
 const formSchema = z.object({
     dateTime: z.string().min(1, "Datum ist erforderlich").transform((val) => new Date(val)).pipe(z.date()),
+    incidentDepartmentId: z.string().min(1, "Abteilung ist erforderlich"),
     incidentDepartment: z.string().min(1, "Abteilung ist erforderlich"),
     incidentReasonId: z.string().min(1, "Grund ist erforderlich"),
     incidentReason: z.string().min(1, "Grund ist erforderlich"),
@@ -33,15 +36,17 @@ interface NewIncidentWizardStepNewIncidentProps {
     initialTopics: Promise<Topic[]>;
     presetTopicSelections: Promise<TopicSelection[]>;
     initialReasons: Promise<IncidentReason[]>;
+    initialDepartments: Promise<Department[]>;
 }
 
-export default function NewIncidentWizardStepNewIncident({ previousStep, nextStep, initialTopics, presetTopicSelections, initialReasons }: NewIncidentWizardStepNewIncidentProps) {
+export default function NewIncidentWizardStepNewIncident({ previousStep, nextStep, initialTopics, presetTopicSelections, initialReasons, initialDepartments }: NewIncidentWizardStepNewIncidentProps) {
     const { data, updateData } = useWizard();
     const topics = use(initialTopics);
 
     const form = useForm({
         defaultValues: {
             dateTime: data.dateTime,
+            incidentDepartmentId: data.incidentDepartmentId,
             incidentDepartment: data.incidentDepartment,
             incidentReasonId: data.incidentReasonId,
             incidentReason: data.incidentReason,
@@ -55,6 +60,7 @@ export default function NewIncidentWizardStepNewIncident({ previousStep, nextSte
             const selectedTopics = topics.filter(t => value.topicIds.includes(t.id));
             updateData({
                 dateTime: value.dateTime,
+                incidentDepartmentId: value.incidentDepartmentId,
                 incidentDepartment: value.incidentDepartment,
                 incidentReasonId: value.incidentReasonId,
                 incidentReason: value.incidentReason,
@@ -100,21 +106,23 @@ export default function NewIncidentWizardStepNewIncident({ previousStep, nextSte
                             )
                         }}
                     </form.Field>
-                    <form.Field name="incidentDepartment">
+                    <form.Field name="incidentDepartmentId">
                         {(field) => {
                             const isInvalid =
                                 field.state.meta.isTouched && !field.state.meta.isValid
                             return (
                                 <Field data-invalid={isInvalid}>
-                                    <FieldLabel htmlFor={field.name}>Abteilung</FieldLabel>
-                                    <Input
-                                        id={field.name}
-                                        name={field.name}
-                                        value={field.state.value}
-                                        onBlur={field.handleBlur}
-                                        onChange={(e) => field.handleChange(e.target.value)}
-                                        aria-invalid={isInvalid}
-                                    />
+                                    <FieldLabel>Abteilung</FieldLabel>
+                                    <Suspense fallback={<Spinner />}>
+                                        <DepartmentSelector
+                                            initialDepartments={initialDepartments}
+                                            selectedDepartmentId={field.state.value}
+                                            onSelectionChange={(departmentId, departmentName) => {
+                                                field.handleChange(departmentId)
+                                                form.setFieldValue("incidentDepartment", departmentName)
+                                            }}
+                                        />
+                                    </Suspense>
                                     {isInvalid && (
                                         <FieldError errors={field.state.meta.errors} />
                                     )}

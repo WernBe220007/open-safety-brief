@@ -7,6 +7,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 export interface WizardData {
     // Incident details
     dateTime: string;
+    incidentDepartmentId: string;
     incidentDepartment: string;
     incidentReasonId: string;
     incidentReason: string;
@@ -24,6 +25,9 @@ export interface WizardData {
 
     // Participant signatures
     participantSignatures: Map<string, string>;
+
+    // Created incident ID
+    incidentId: string;
 }
 
 interface WizardContextType {
@@ -34,6 +38,7 @@ interface WizardContextType {
 
 const initialWizardData: WizardData = {
     dateTime: new Date().toISOString().slice(0, 16),
+    incidentDepartmentId: "",
     incidentDepartment: "",
     incidentReasonId: "",
     incidentReason: "",
@@ -45,6 +50,7 @@ const initialWizardData: WizardData = {
     instructor: "",
     instructorSignature: null,
     participantSignatures: new Map(),
+    incidentId: "",
 };
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined);

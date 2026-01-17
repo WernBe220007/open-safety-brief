@@ -127,14 +127,16 @@ export default function NewIncidentWizardStepSignatures({ previousStep, nextStep
                     }
                 }
 
-                await createIncident({
+                const { id } = await createIncident({
                     dateTime: data.dateTime,
-                    department: data.incidentDepartment,
+                    departmentId: data.incidentDepartmentId,
                     reasonId: data.incidentReasonId,
                     instructor: data.instructor,
                     topicIds: data.selectedTopicIds,
                     signatures,
                 });
+
+                updateData({ incidentId: id });
 
                 toast.success("Unterweisung erfolgreich gespeichert");
                 nextStep();

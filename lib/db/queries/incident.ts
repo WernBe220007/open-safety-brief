@@ -3,11 +3,11 @@ import { desc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { db } from "@/lib";
 import { auth } from "@/lib/auth";
-import { incident, incidentReason, incidentTopics, signature } from "../schema";
+import { department, incident, incidentReason, incidentTopics, signature } from "../schema";
 
 export interface CreateIncidentData {
     dateTime: string;
-    department: string;
+    departmentId: string;
     reasonId: string;
     instructor: string;
     topicIds: string[];
@@ -32,7 +32,7 @@ export async function createIncident(data: CreateIncidentData) {
             .insert(incident)
             .values({
                 date: new Date(data.dateTime),
-                department: data.department,
+                department: data.departmentId,
                 reason: data.reasonId,
                 instructor: data.instructor,
             })
@@ -75,9 +75,12 @@ export async function getIncidents() {
     const data = await db.select({
         id: incident.id,
         date: incident.date,
-        department: incident.department,
+        department: department.name,
         reason: incidentReason.reason,
         instructor: incident.instructor,
-    }).from(incident).leftJoin(incidentReason, eq(incident.reason, incidentReason.id)).orderBy(desc(incident.date));
+    }).from(incident)
+        .leftJoin(department, eq(incident.department, department.id))
+        .leftJoin(incidentReason, eq(incident.reason, incidentReason.id))
+        .orderBy(desc(incident.date));
     return data;
 }

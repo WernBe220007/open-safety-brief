@@ -70,10 +70,17 @@ export const incidentReason = pgTable("incident_reason", {
     reason: text().notNull(),
 });
 
+export const department = pgTable("department", {
+    id: uuid().primaryKey().defaultRandom(),
+    name: text().notNull(),
+});
+
 export const incident = pgTable("incident", {
     id: uuid().primaryKey().defaultRandom(),
     date: timestamp().defaultNow().notNull(),
-    department: text().notNull(),
+    department: uuid()
+        .notNull()
+        .references(() => department.id),
     reason: uuid()
         .notNull()
         .references(() => incidentReason.id),
