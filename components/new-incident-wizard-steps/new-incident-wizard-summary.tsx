@@ -1,12 +1,11 @@
 "use client"
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { Button } from "../ui/button";
 import { useWizard } from "../new-incident-wizard-context";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { CalendarIcon, ClockIcon, Building2Icon, FileTextIcon, UsersIcon, PenIcon } from "lucide-react";
 
 export default function NewIncidentWizardStepSummary({ previousStep, nextStep }: { previousStep: () => void; nextStep: () => void }) {
     const { data, updateData } = useWizard();
@@ -28,6 +27,17 @@ export default function NewIncidentWizardStepSummary({ previousStep, nextStep }:
             }),
         };
     };
+
+    // Callback ref to load existing signature when canvas mounts
+    const canvasRef = useCallback((canvas: SignatureCanvas | null) => {
+        sigCanvas.current = canvas;
+        if (canvas) {
+            const existingSignature = data.instructorSignature;
+            if (existingSignature) {
+                canvas.fromDataURL(existingSignature);
+            }
+        }
+    }, [data.instructorSignature]);
 
     const handleClear = () => {
         sigCanvas.current?.clear();
@@ -126,9 +136,9 @@ export default function NewIncidentWizardStepSummary({ previousStep, nextStep }:
                             Unterschrift (Unterweiser)
                         </CardTitle>
                         <SignatureCanvas
-                            ref={sigCanvas}
+                            ref={canvasRef}
                             canvasProps={{
-                                className: "border rounded-md border-border bg-background w-full h-48 touch-none"
+                                className: "border rounded-md border-border bg-white w-full h-48 touch-none"
                             }}
                             onEnd={handleSignatureEnd}
                         />
