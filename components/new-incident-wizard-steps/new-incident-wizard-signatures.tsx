@@ -116,12 +116,17 @@ export default function NewIncidentWizardStepSignatures({ previousStep, nextStep
         startTransition(async () => {
             try {
                 // Build signatures array from all participants who have signed
-                const signatures: Array<{ name: string; signatureData: string }> = [];
+                const signatures: Array<{ name: string; kurz: string; signatureData: string }> = [];
                 for (const participant of sortedParticipants) {
                     const sig = data.participantSignatures.get(participant.id);
                     if (sig) {
+                        // Derive kurz from email
+                        const kurz = participant.mail
+                            ? participant.mail.split('@')[0].toUpperCase()
+                            : participant.displayName.substring(0, 4).toUpperCase();
                         signatures.push({
                             name: participant.displayName,
+                            kurz,
                             signatureData: sig,
                         });
                     }

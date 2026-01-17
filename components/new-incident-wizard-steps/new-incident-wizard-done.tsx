@@ -1,14 +1,17 @@
 "use client"
 import Link from "next/link";
+import { useTransition } from "react";
 import { useWizard } from "../new-incident-wizard-context";
 import PDFDownloadButton from "../pdf-download-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { generatePDF } from "@/lib/pdfgen";
+import { getIncidentById } from "@/lib/db/queries/incident";
 import { Home, Mail, Share2 } from "lucide-react";
 
 export default function NewIncidentWizardStepDone({ previousStep: _previousStep, nextStep: _nextStep }: { previousStep: () => void; nextStep: () => void }) {
     const { data } = useWizard();
+    const [isSharing, startTransition] = useTransition();
     void _previousStep;
     void _nextStep;
 
@@ -18,33 +21,36 @@ export default function NewIncidentWizardStepDone({ previousStep: _previousStep,
         window.location.href = `mailto:?subject=${subject}&body=${body}`;
     };
 
-    const handleNativeShare = async () => {
-        const pdfBytes = await generatePDF();
-        const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
-        const file = new File([blob], `unterweisung-${data.incidentId}.pdf`, { type: "application/pdf" });
+    const handleNativeShare = () => {
+        startTransition(async () => {
+            const incident = await getIncidentById(data.incidentId);
+            const pdfBytes = await generatePDF(incident);
+            const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+            const file = new File([blob], `unterweisung-${data.incidentId}.pdf`, { type: "application/pdf" });
 
-        if (navigator.share && navigator.canShare({ files: [file] })) {
-            try {
-                await navigator.share({
-                    title: `Unterweisung vom ${new Date(data.dateTime).toLocaleDateString()}`,
-                    text: `Unterweisung - ${data.incidentReason}`,
-                    files: [file],
-                });
-            } catch (error) {
-                if ((error as Error).name !== "AbortError") {
-                    console.error("Error sharing:", error);
+            if (navigator.share && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        title: `Unterweisung vom ${new Date(data.dateTime).toLocaleDateString()}`,
+                        text: `Unterweisung - ${data.incidentReason}`,
+                        files: [file],
+                    });
+                } catch (error) {
+                    if ((error as Error).name !== "AbortError") {
+                        console.error("Error sharing:", error);
+                    }
                 }
+            } else {
+                // download the file if native share is not supported
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = file.name;
+                a.click();
+                URL.revokeObjectURL(url);
+                alert("Teilen wird auf diesem Gerät nicht unterstützt. Die Datei wurde heruntergeladen.");
             }
-        } else {
-            // download the file if native share is not supported
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = file.name;
-            a.click();
-            URL.revokeObjectURL(url);
-            alert("Teilen wird auf diesem Gerät nicht unterstützt. Die Datei wurde heruntergeladen.");
-        }
+        });
     };
 
     return (
@@ -67,9 +73,9 @@ export default function NewIncidentWizardStepDone({ previousStep: _previousStep,
                         <Mail className="mr-2 size-5" />
                         Per E-Mail senden
                     </Button>
-                    <Button variant="outline" className="flex-1" onClick={handleNativeShare}>
+                    <Button variant="outline" className="flex-1" onClick={handleNativeShare} disabled={isSharing}>
                         <Share2 className="mr-2 size-5" />
-                        Teilen
+                        {isSharing ? "Wird vorbereitet..." : "Teilen"}
                     </Button>
                 </div>
             </div>

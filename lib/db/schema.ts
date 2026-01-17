@@ -116,6 +116,7 @@ export const signature = pgTable("signature", {
         .notNull()
         .references(() => incident.id, { onDelete: "cascade" }),
     name: text().notNull(),
+    kurz: text().notNull(),
     signedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     signature: text().notNull(),
 });
