@@ -19,7 +19,7 @@ export default async function Archive() {
                         <CardContent>
                             <p>{inc.instructor} - {inc.department}</p>
                         </CardContent>
-                        <PDFDownloadButton incidentId={inc.id} className="absolute right-4 top-1/2 -translate-y-1/2" />
+                        <PDFDownloadButton incidentId={inc.id} className="absolute right-4 top-1/2 -translate-y-1/2" isIcon />
                     </Card>
                 ))}
             </div>
