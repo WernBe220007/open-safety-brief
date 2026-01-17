@@ -77,7 +77,7 @@ export const department = pgTable("department", {
 
 export const incident = pgTable("incident", {
     id: uuid().primaryKey().defaultRandom(),
-    date: timestamp().defaultNow().notNull(),
+    date: timestamp({ withTimezone: true }).defaultNow().notNull(),
     department: uuid()
         .notNull()
         .references(() => department.id),
@@ -116,7 +116,7 @@ export const signature = pgTable("signature", {
         .notNull()
         .references(() => incident.id, { onDelete: "cascade" }),
     name: text().notNull(),
-    signedAt: timestamp().defaultNow().notNull(),
+    signedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     signature: text().notNull(),
 });
 

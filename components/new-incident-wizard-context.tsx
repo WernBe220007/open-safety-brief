@@ -2,6 +2,7 @@
 
 import { Member } from "@/lib/graph";
 import { Topic } from "@/lib/db/queries/topics";
+import { formatLocalDateTime } from "@/lib/utils";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 export interface WizardData {
@@ -37,7 +38,7 @@ interface WizardContextType {
 }
 
 const initialWizardData: WizardData = {
-    dateTime: new Date().toISOString().slice(0, 16),
+    dateTime: formatLocalDateTime(new Date()),
     incidentDepartmentId: "",
     incidentDepartment: "",
     incidentReasonId: "",
