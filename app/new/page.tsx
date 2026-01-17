@@ -2,6 +2,7 @@ import NewIncidentWizard from "@/components/new-incident-wizard";
 import { auth } from "@/lib/auth";
 import { getTopicSelections } from "@/lib/db/queries/topic_selection";
 import { getTopics } from "@/lib/db/queries/topics";
+import { getPersons } from "@/lib/db/queries/persons";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -13,10 +14,11 @@ export default async function Page() {
 
     const topics = getTopics();
     const presetTopicSelections = getTopicSelections();
+    const persons = getPersons();
 
     return (
         <main>
-            <NewIncidentWizard initialTopics={topics} presetTopicSelections={presetTopicSelections} />
+            <NewIncidentWizard initialTopics={topics} presetTopicSelections={presetTopicSelections} persons={persons} />
         </main>
     );
 }

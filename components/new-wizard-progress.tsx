@@ -21,7 +21,7 @@ export default function NewWizardProgress({ currentStep, setCurrentStep }: { cur
                                     <div className="h-0.5 w-full bg-blue-600 dark:bg-blue-500" />
                                 </div>
                                 <a
-                                    // onClick={() => { setCurrentStep(stepIdx) }}
+                                    onClick={() => { setCurrentStep(stepIdx) }}
                                     className="relative flex size-8 items-center justify-center rounded-full bg-blue-600 hover:bg-blue-900 dark:bg-blue-500 dark:hover:bg-blue-400"
                                 >
                                     <CheckIcon aria-hidden="true" className="size-5 text-white" />
