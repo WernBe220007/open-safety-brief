@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { TopicSelector } from "@/components/topic-selector"
+import { ReasonSelector } from "@/components/reason-selector"
 import type { Topic } from "@/lib/db/queries/topics"
+import type { IncidentReason } from "@/lib/db/queries/incident_reason"
 import { Suspense, use } from "react"
 import { Spinner } from "../ui/spinner"
 import PresetSelection from "../preset-selection"
@@ -20,6 +22,7 @@ import { useWizard } from "../new-incident-wizard-context"
 const formSchema = z.object({
     dateTime: z.string().min(1, "Datum ist erforderlich").transform((val) => new Date(val)).pipe(z.date()),
     incidentDepartment: z.string().min(1, "Abteilung ist erforderlich"),
+    incidentReasonId: z.string().min(1, "Grund ist erforderlich"),
     incidentReason: z.string().min(1, "Grund ist erforderlich"),
     topicIds: z.array(z.string()),
 })
@@ -29,9 +32,10 @@ interface NewIncidentWizardStepNewIncidentProps {
     nextStep: () => void;
     initialTopics: Promise<Topic[]>;
     presetTopicSelections: Promise<TopicSelection[]>;
+    initialReasons: Promise<IncidentReason[]>;
 }
 
-export default function NewIncidentWizardStepNewIncident({ previousStep, nextStep, initialTopics, presetTopicSelections }: NewIncidentWizardStepNewIncidentProps) {
+export default function NewIncidentWizardStepNewIncident({ previousStep, nextStep, initialTopics, presetTopicSelections, initialReasons }: NewIncidentWizardStepNewIncidentProps) {
     const { data, updateData } = useWizard();
     const topics = use(initialTopics);
 
@@ -39,6 +43,7 @@ export default function NewIncidentWizardStepNewIncident({ previousStep, nextSte
         defaultValues: {
             dateTime: data.dateTime,
             incidentDepartment: data.incidentDepartment,
+            incidentReasonId: data.incidentReasonId,
             incidentReason: data.incidentReason,
             topicIds: data.selectedTopicIds,
         },
@@ -51,6 +56,7 @@ export default function NewIncidentWizardStepNewIncident({ previousStep, nextSte
             updateData({
                 dateTime: value.dateTime,
                 incidentDepartment: value.incidentDepartment,
+                incidentReasonId: value.incidentReasonId,
                 incidentReason: value.incidentReason,
                 selectedTopicIds: value.topicIds,
                 selectedTopics: selectedTopics,
@@ -61,7 +67,7 @@ export default function NewIncidentWizardStepNewIncident({ previousStep, nextSte
 
     return (
         <>
-            <h2 className="text-3xl mt-4 ml-4 mb-10">Neuer Vorfall</h2>
+            <h2 className="text-3xl mt-4 ml-4 mb-6">Neuer Vorfall</h2>
             <form
                 id="new-incident-form"
                 onSubmit={(e) => {
@@ -116,21 +122,23 @@ export default function NewIncidentWizardStepNewIncident({ previousStep, nextSte
                             )
                         }}
                     </form.Field>
-                    <form.Field name="incidentReason">
+                    <form.Field name="incidentReasonId">
                         {(field) => {
                             const isInvalid =
                                 field.state.meta.isTouched && !field.state.meta.isValid
                             return (
                                 <Field data-invalid={isInvalid}>
-                                    <FieldLabel htmlFor={field.name}>Grund</FieldLabel>
-                                    <Input
-                                        id={field.name}
-                                        name={field.name}
-                                        value={field.state.value}
-                                        onBlur={field.handleBlur}
-                                        onChange={(e) => field.handleChange(e.target.value)}
-                                        aria-invalid={isInvalid}
-                                    />
+                                    <FieldLabel>Grund</FieldLabel>
+                                    <Suspense fallback={<Spinner />}>
+                                        <ReasonSelector
+                                            initialReasons={initialReasons}
+                                            selectedReasonId={field.state.value}
+                                            onSelectionChange={(reasonId, reasonText) => {
+                                                field.handleChange(reasonId)
+                                                form.setFieldValue("incidentReason", reasonText)
+                                            }}
+                                        />
+                                    </Suspense>
                                     {isInvalid && (
                                         <FieldError errors={field.state.meta.errors} />
                                     )}

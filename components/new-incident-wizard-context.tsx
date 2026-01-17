@@ -8,18 +8,20 @@ export interface WizardData {
     // Incident details
     dateTime: string;
     incidentDepartment: string;
+    incidentReasonId: string;
     incidentReason: string;
     selectedTopicIds: string[];
     selectedTopics: Topic[];
-    
+
     // Participants
     selectedPersonIds: string[];
     selectedPersons: Member[];
     temporaryPersons: Member[];
-    
+
     // Summary / Instructor signature
+    instructor: string;
     instructorSignature: string | null;
-    
+
     // Participant signatures
     participantSignatures: Map<string, string>;
 }
@@ -33,12 +35,14 @@ interface WizardContextType {
 const initialWizardData: WizardData = {
     dateTime: new Date().toISOString().slice(0, 16),
     incidentDepartment: "",
+    incidentReasonId: "",
     incidentReason: "",
     selectedTopicIds: [],
     selectedTopics: [],
     selectedPersonIds: [],
     selectedPersons: [],
     temporaryPersons: [],
+    instructor: "",
     instructorSignature: null,
     participantSignatures: new Map(),
 };

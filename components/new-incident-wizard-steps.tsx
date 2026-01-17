@@ -7,6 +7,7 @@ import NewIncidentWizardStepParticipants from "./new-incident-wizard-steps/new-i
 import NewIncidentWizardStepSignatures from "./new-incident-wizard-steps/new-incident-wizard-signatures";
 import NewIncidentWizardStepSummary from "./new-incident-wizard-steps/new-incident-wizard-summary";
 import type { Topic } from "@/lib/db/queries/topics";
+import type { IncidentReason } from "@/lib/db/queries/incident_reason";
 import { Member } from "@/lib/graph";
 
 interface NewIncidentWizardStepsProps {
@@ -15,9 +16,10 @@ interface NewIncidentWizardStepsProps {
     initialTopics: Promise<Topic[]>;
     presetTopicSelections: Promise<TopicSelection[]>;
     persons: Promise<Member[]>;
+    initialReasons: Promise<IncidentReason[]>;
 }
 
-export default function NewIncidentWizardSteps({ currentStep, setCurrentStep, initialTopics, presetTopicSelections, persons }: NewIncidentWizardStepsProps) {
+export default function NewIncidentWizardSteps({ currentStep, setCurrentStep, initialTopics, presetTopicSelections, persons, initialReasons }: NewIncidentWizardStepsProps) {
     function nextStep() {
         if (currentStep < 4) {
             setCurrentStep(currentStep + 1);
@@ -33,7 +35,7 @@ export default function NewIncidentWizardSteps({ currentStep, setCurrentStep, in
 
     switch (currentStep) {
         case 0:
-            return <NewIncidentWizardStepNewIncident previousStep={previousStep} nextStep={nextStep} initialTopics={initialTopics} presetTopicSelections={presetTopicSelections} />;
+            return <NewIncidentWizardStepNewIncident previousStep={previousStep} nextStep={nextStep} initialTopics={initialTopics} presetTopicSelections={presetTopicSelections} initialReasons={initialReasons} />;
         case 1:
             return <NewIncidentWizardStepParticipants previousStep={previousStep} nextStep={nextStep} persons={persons} />;
         case 2:

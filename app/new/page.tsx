@@ -1,5 +1,6 @@
 import NewIncidentWizard from "@/components/new-incident-wizard";
 import { auth } from "@/lib/auth";
+import { getIncidentReasons } from "@/lib/db/queries/incident_reason";
 import { getTopicSelections } from "@/lib/db/queries/topic_selection";
 import { getTopics } from "@/lib/db/queries/topics";
 import { getPersons } from "@/lib/db/queries/persons";
@@ -15,10 +16,11 @@ export default async function Page() {
     const topics = getTopics();
     const presetTopicSelections = getTopicSelections();
     const persons = getPersons();
+    const reasons = getIncidentReasons();
 
     return (
         <main>
-            <NewIncidentWizard initialTopics={topics} presetTopicSelections={presetTopicSelections} persons={persons} />
+            <NewIncidentWizard initialTopics={topics} presetTopicSelections={presetTopicSelections} persons={persons} initialReasons={reasons} />
         </main>
     );
 }

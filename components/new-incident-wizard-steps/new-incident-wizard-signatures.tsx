@@ -1,11 +1,11 @@
 "use client"
 
-import { useRef, useState, useMemo, useCallback } from "react";
+import { useRef, useState, useMemo, useCallback, useTransition } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { Button } from "../ui/button";
 import { useWizard } from "../new-incident-wizard-context";
 import { Card, CardContent, CardTitle } from "../ui/card";
-import { Check, UsersIcon, X } from "lucide-react";
+import { Check, UsersIcon, X, Loader2 } from "lucide-react";
 import {
     Command,
     CommandEmpty,
@@ -32,6 +32,8 @@ import {
     AlertDialogTitle,
 } from "../ui/alert-dialog";
 import SignaturesProgressbar from "../signatures-progressbar";
+import { createIncident } from "@/lib/db/queries/incident";
+import { toast } from "sonner";
 
 export default function NewIncidentWizardStepSignatures({ previousStep, nextStep }: { previousStep: () => void; nextStep: () => void }) {
     const { data, updateData } = useWizard();
@@ -39,6 +41,7 @@ export default function NewIncidentWizardStepSignatures({ previousStep, nextStep
     const [currentIndex, setCurrentIndex] = useState(0);
     const [jumpOpen, setJumpOpen] = useState(false);
     const [showWarningDialog, setShowWarningDialog] = useState(false);
+    const [isSaving, startTransition] = useTransition();
 
     // Sort participants alphabetically
     const sortedParticipants = useMemo(() => {
@@ -109,6 +112,39 @@ export default function NewIncidentWizardStepSignatures({ previousStep, nextStep
         }
     };
 
+    const saveIncidentToDatabase = () => {
+        startTransition(async () => {
+            try {
+                // Build signatures array from all participants who have signed
+                const signatures: Array<{ name: string; signatureData: string }> = [];
+                for (const participant of sortedParticipants) {
+                    const sig = data.participantSignatures.get(participant.id);
+                    if (sig) {
+                        signatures.push({
+                            name: participant.displayName,
+                            signatureData: sig,
+                        });
+                    }
+                }
+
+                await createIncident({
+                    dateTime: data.dateTime,
+                    department: data.incidentDepartment,
+                    reasonId: data.incidentReasonId,
+                    instructor: data.instructor,
+                    topicIds: data.selectedTopicIds,
+                    signatures,
+                });
+
+                toast.success("Unterweisung erfolgreich gespeichert");
+                nextStep();
+            } catch (error) {
+                console.error("Failed to save incident:", error);
+                toast.error("Fehler beim Speichern der Unterweisung");
+            }
+        });
+    };
+
     const handleNext = () => {
         saveCurrentSignature();
         if (currentIndex < totalParticipants - 1) {
@@ -117,14 +153,14 @@ export default function NewIncidentWizardStepSignatures({ previousStep, nextStep
             if (!allSigned) {
                 setShowWarningDialog(true);
             } else {
-                nextStep();
+                saveIncidentToDatabase();
             }
         }
     };
 
     const handleConfirmProceed = () => {
         setShowWarningDialog(false);
-        nextStep();
+        saveIncidentToDatabase();
     };
 
     if (totalParticipants === 0) {
@@ -229,11 +265,20 @@ export default function NewIncidentWizardStepSignatures({ previousStep, nextStep
             </div>
 
             <div className="mt-6 mx-4 flex justify-between">
-                <Button variant="outline" onClick={handleBack}>
+                <Button variant="outline" onClick={handleBack} disabled={isSaving}>
                     Zurück
                 </Button>
-                <Button onClick={handleNext}>
-                    Weiter
+                <Button onClick={handleNext} disabled={isSaving}>
+                    {isSaving ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Speichern...
+                        </>
+                    ) : currentIndex === totalParticipants - 1 ? (
+                        "Abschließen"
+                    ) : (
+                        "Weiter"
+                    )}
                 </Button>
             </div>
 
@@ -247,9 +292,16 @@ export default function NewIncidentWizardStepSignatures({ previousStep, nextStep
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleConfirmProceed}>
-                            Trotzdem fortfahren
+                        <AlertDialogCancel disabled={isSaving}>Abbrechen</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmProceed} disabled={isSaving}>
+                            {isSaving ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Speichern...
+                                </>
+                            ) : (
+                                "Trotzdem fortfahren"
+                            )}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

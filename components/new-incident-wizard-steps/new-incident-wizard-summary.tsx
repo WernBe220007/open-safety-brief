@@ -6,8 +6,10 @@ import { Button } from "../ui/button";
 import { useWizard } from "../new-incident-wizard-context";
 import { Card, CardContent, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { authClient } from "@/lib/auth-client";
 
 export default function NewIncidentWizardStepSummary({ previousStep, nextStep }: { previousStep: () => void; nextStep: () => void }) {
+    const { data: session, isPending, error } = authClient.useSession();
     const { data, updateData } = useWizard();
     const sigCanvas = useRef<SignatureCanvas>(null);
     const [hasSigned, setHasSigned] = useState(!!data.instructorSignature);
@@ -46,9 +48,9 @@ export default function NewIncidentWizardStepSummary({ previousStep, nextStep }:
     };
 
     const handleSignatureEnd = () => {
-        if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
+        if (sigCanvas.current && !sigCanvas.current.isEmpty() && !isPending && !error && session) {
             const signatureData = sigCanvas.current.toDataURL();
-            updateData({ instructorSignature: signatureData });
+            updateData({ instructorSignature: signatureData, instructor: session.user.name });
             setHasSigned(true);
         }
     };
@@ -135,13 +137,17 @@ export default function NewIncidentWizardStepSummary({ previousStep, nextStep }:
                         <CardTitle className="text-lg flex items-center mb-2">
                             Unterschrift (Unterweiser)
                         </CardTitle>
-                        <SignatureCanvas
-                            ref={canvasRef}
-                            canvasProps={{
-                                className: "border rounded-md border-border bg-white w-full h-48 touch-none"
-                            }}
-                            onEnd={handleSignatureEnd}
-                        />
+                        {error ? (
+                            <p className="text-sm text-destructive">Fehler beim Laden der Sitzung: {error.message}</p>
+                        ) : (
+                            <SignatureCanvas
+                                ref={canvasRef}
+                                canvasProps={{
+                                    className: "border rounded-md border-border bg-white w-full h-48 touch-none"
+                                }}
+                                onEnd={handleSignatureEnd}
+                            />
+                        )}
                         <div className="flex justify-between mt-2">
                             {!hasSigned ? (
                                 <p className="text-sm text-destructive mt-2">
@@ -161,7 +167,7 @@ export default function NewIncidentWizardStepSummary({ previousStep, nextStep }:
                 <Button variant="outline" onClick={previousStep}>
                     Zurück
                 </Button>
-                <Button onClick={handleNext} disabled={!hasSigned}>
+                <Button onClick={handleNext} disabled={!hasSigned || isPending}>
                     Weiter
                 </Button>
             </div>
