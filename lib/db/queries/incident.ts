@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { db } from "@/lib";
 import { auth } from "@/lib/auth";
 import { department, incident, incidentReason, incidentTopics, signature, topic } from "../schema";
+import { cacheLife } from "next/cache";
 
 export interface CreateIncidentData {
     dateTime: string;
@@ -88,6 +89,9 @@ export async function getIncidents() {
 }
 
 export async function getIncidentById(incidentId: string) {
+    "use cache";
+    cacheLife('days');
+
     const session = await auth.api.getSession({
         headers: await headers(),
     });
