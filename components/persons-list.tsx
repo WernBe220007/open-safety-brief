@@ -46,7 +46,7 @@ export default function PersonsList({ persons, temporaryPersons = [], selectedId
                     className="pl-9"
                 />
             </div>
-            <ScrollArea className="h-[55vh] rounded-md border p-4">
+            <ScrollArea className="h-[45vh] md:h-[55vh] rounded-md border p-4">
                 <div className="flex flex-col gap-2">
                     {filteredPersons.length === 0 ? (
                         <p className="text-sm text-muted-foreground text-center py-4">

@@ -61,14 +61,14 @@ async function drawHeader(page: PDFPage, font: PDFFont, boldFont: PDFFont) {
     });
 
     // Organization name
-    page.drawText('LINZER TECHNIKUM', {
+    page.drawText(process.env.NEXT_PUBLIC_PDF_COMPANY || "FIRMA", {
         x: MARGIN_LEFT + 10,
         y: headerY - 22,
         size: 11,
         font: boldFont,
         color: TEXT_COLOR,
     });
-    page.drawText('htl paul-hahn-straße', {
+    page.drawText(process.env.NEXT_PUBLIC_PDF_SUBTITLE || 'ADDRESSE', {
         x: MARGIN_LEFT + 10,
         y: headerY - 34,
         size: 8,

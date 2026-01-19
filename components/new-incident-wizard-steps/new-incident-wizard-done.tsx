@@ -17,7 +17,7 @@ export default function NewIncidentWizardStepDone({ previousStep: _previousStep,
 
     const handleEmailShare = async () => {
         const subject = encodeURIComponent(`Unterweisung vom ${new Date(data.dateTime).toLocaleDateString()}`);
-        const body = encodeURIComponent(`Die Unterweisung vom ${new Date(data.dateTime).toLocaleString()}.`);
+        const body = encodeURIComponent(`https://${window.location.host}/api/pdf?incidentId=${data.incidentId}`);
         window.location.href = `mailto:?subject=${subject}&body=${body}`;
     };
 

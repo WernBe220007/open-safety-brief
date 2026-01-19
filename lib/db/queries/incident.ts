@@ -88,17 +88,9 @@ export async function getIncidents() {
     return data;
 }
 
-export async function getIncidentById(incidentId: string) {
+async function queryForIncidentById(incidentId: string) {
     "use cache";
     cacheLife('days');
-
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-
-    if (!session) {
-        throw new Error("No session found");
-    }
 
     // Get the incident with department and reason
     const [incidentData] = await db.select({
@@ -139,6 +131,18 @@ export async function getIncidentById(incidentId: string) {
         topics,
         signatures,
     };
+}
+
+export async function getIncidentById(incidentId: string) {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session) {
+        throw new Error("No session found");
+    }
+
+    return await queryForIncidentById(incidentId);
 }
 
 export type IncidentDetail = Awaited<ReturnType<typeof getIncidentById>>;
