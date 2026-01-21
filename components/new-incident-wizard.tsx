@@ -8,7 +8,7 @@ export default function NewIncidentWizard({ initialTopics, presetTopicSelections
     return (
         <WizardProvider>
             <NewIncidentWizardSteps initialTopics={initialTopics} presetTopicSelections={presetTopicSelections} persons={persons} initialReasons={initialReasons} initialDepartments={initialDepartments} />
-            <div className="flex flex-row justify-center fixed bottom-10 w-screen">
+            <div className="flex flex-row justify-center fixed bottom-10 w-screen -z-10">
                 <NewWizardProgress />
             </div>
         </WizardProvider>
