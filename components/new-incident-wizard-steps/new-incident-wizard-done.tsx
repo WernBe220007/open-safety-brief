@@ -1,5 +1,4 @@
 "use client"
-import Link from "next/link";
 import { useTransition } from "react";
 import { useWizard } from "../new-incident-wizard-context";
 import PDFDownloadButton from "../pdf-download-button";
@@ -8,9 +7,10 @@ import { Button } from "../ui/button";
 import { generatePDF } from "@/lib/pdfgen";
 import { getIncidentById } from "@/lib/db/queries/incident";
 import { Home, Mail, Share2 } from "lucide-react";
+import Link from "next/link";
 
 export default function NewIncidentWizardStepDone({ previousStep: _previousStep, nextStep: _nextStep }: { previousStep: () => void; nextStep: () => void }) {
-    const { data } = useWizard();
+    const { data, resetData } = useWizard();
     const [isSharing, startTransition] = useTransition();
     void _previousStep;
     void _nextStep;
@@ -81,7 +81,7 @@ export default function NewIncidentWizardStepDone({ previousStep: _previousStep,
             </div>
             <div className="m-4 flex justify-end">
                 <Button asChild>
-                    <Link href="/">
+                    <Link href="/" onNavigate={resetData}>
                         <Home className="mr-2 size-5" />
                         Fertig
                     </Link>

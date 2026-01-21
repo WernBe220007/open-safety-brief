@@ -1,5 +1,8 @@
+"use client"
+
 import { cn } from "@/lib/utils"
 import { CheckIcon } from "lucide-react"
+import { useWizard } from "./new-incident-wizard-context"
 
 const steps = [
     { name: 'Neues Ereignis' },
@@ -9,7 +12,8 @@ const steps = [
     { name: 'Fertig' },
 ]
 
-export default function NewWizardProgress({ currentStep, setCurrentStep }: { currentStep: number; setCurrentStep: (step: number) => void }) {
+export default function NewWizardProgress() {
+    const { currentStep, setCurrentStep } = useWizard();
     return (
         <nav aria-label="Progress">
             <ol role="list" className="flex items-center">

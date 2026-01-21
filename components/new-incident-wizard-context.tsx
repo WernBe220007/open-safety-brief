@@ -35,6 +35,8 @@ interface WizardContextType {
     data: WizardData;
     updateData: (updates: Partial<WizardData>) => void;
     resetData: () => void;
+    currentStep: number;
+    setCurrentStep: (step: number | ((prev: number) => number)) => void;
 }
 
 const initialWizardData: WizardData = {
@@ -58,6 +60,7 @@ const WizardContext = createContext<WizardContextType | undefined>(undefined);
 
 export function WizardProvider({ children }: { children: ReactNode }) {
     const [data, setData] = useState<WizardData>(initialWizardData);
+    const [currentStep, setCurrentStep] = useState(0);
 
     const updateData = (updates: Partial<WizardData>) => {
         setData((prev) => ({ ...prev, ...updates }));
@@ -65,10 +68,11 @@ export function WizardProvider({ children }: { children: ReactNode }) {
 
     const resetData = () => {
         setData(initialWizardData);
+        setCurrentStep(0);
     };
 
     return (
-        <WizardContext.Provider value={{ data, updateData, resetData }}>
+        <WizardContext.Provider value={{ data, updateData, resetData, currentStep, setCurrentStep }}>
             {children}
         </WizardContext.Provider>
     );

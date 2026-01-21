@@ -10,10 +10,9 @@ import type { Topic } from "@/lib/db/queries/topics";
 import type { IncidentReason } from "@/lib/db/queries/incident_reason";
 import type { Department } from "@/lib/db/queries/department";
 import { Member } from "@/lib/graph";
+import { useWizard } from "./new-incident-wizard-context";
 
-interface NewIncidentWizardStepsProps {
-    currentStep: number;
-    setCurrentStep: (step: number) => void;
+export interface NewIncidentWizardStepsProps {
     initialTopics: Promise<Topic[]>;
     presetTopicSelections: Promise<TopicSelection[]>;
     persons: Promise<Member[]>;
@@ -21,7 +20,9 @@ interface NewIncidentWizardStepsProps {
     initialDepartments: Promise<Department[]>;
 }
 
-export default function NewIncidentWizardSteps({ currentStep, setCurrentStep, initialTopics, presetTopicSelections, persons, initialReasons, initialDepartments }: NewIncidentWizardStepsProps) {
+export default function NewIncidentWizardSteps({ initialTopics, presetTopicSelections, persons, initialReasons, initialDepartments }: NewIncidentWizardStepsProps) {
+    const { currentStep, setCurrentStep } = useWizard();
+
     function nextStep() {
         if (currentStep < 4) {
             setCurrentStep(currentStep + 1);
