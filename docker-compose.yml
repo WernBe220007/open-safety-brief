@@ -6,7 +6,7 @@ services:
       DATABASE_URL: postgres://osb_user:osb_password@db:5432/osb_db
       BETTER_AUTH_SECRET: YOURBETTERAUTHSECRET # https://www.better-auth.com/docs/installation#set-environment-variables
       BETTER_AUTH_URL: http://localhost:3000 # The final URL where the app is hosted
-      MICROSOFT_CLIENT_ID: MSID # alternatively use GitHub
+      MICROSOFT_CLIENT_ID: MSID
       MICROSOFT_CLIENT_SECRET: MSSECRET
       MICROSOFT_TENANT_ID: MSTENANTID
       MICROSOFT_TEACHERS_GROUP_ID: MSTEACHERSGROUPID
